@@ -15,7 +15,6 @@ export class AuthModel {
       throw new Error("IO_ERROR");
     }
 
-    // DEBE RETORNAR EL USARIO PUBLICO TIPADO
     const { password, ...publicUser } = user;
 
     return publicUser as PublicUser;

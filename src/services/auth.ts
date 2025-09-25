@@ -34,4 +34,29 @@ export class AuthService {
       return { ok: false, error: "IO_ERROR" };
     }
   }
+
+  static async login({
+    username,
+    password,
+  }: RegisterParams): Promise<Result<PublicUser, DomainError | InfraError>> {
+    try {
+      const user = await AuthModel.getUserByUsername(username);
+
+      if (!user) {
+        return { ok: false, error: "INVALID_CREDENTIALS" };
+      }
+
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+
+      if (!isPasswordValid) {
+        return { ok: false, error: "INVALID_CREDENTIALS" };
+      }
+
+      const { password: pwd, ...publicUser } = user;
+
+      return { ok: true, data: publicUser as PublicUser };
+    } catch {
+      return { ok: false, error: "IO_ERROR" };
+    }
+  }
 }
