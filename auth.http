@@ -106,7 +106,7 @@ Content-Type: {{contentType}}
   "password": ""
 }
 
-### 13. Logout (nota: el endpoint está pendiente de implementación)
+### 13. Logout
 POST {{baseUrl}}/auth/logout
 Content-Type: {{contentType}}
 

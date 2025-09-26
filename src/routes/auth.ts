@@ -7,8 +7,6 @@ router.post("/login", AuthController.login);
 
 router.post("/register", AuthController.register);
 
-router.post("/logout", () => {
-  /*Todo llamar al controlador*/
-});
+router.post("/logout", AuthController.logout);
 
 export default router;

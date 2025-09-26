@@ -67,4 +67,32 @@ export class AuthController {
 
     return;
   }
+
+  static async logout(req: Request, res: Response) {
+    const token = req.cookies["access_token"];
+
+    if (!token) {
+      return res
+        .status(401)
+        .json({ message: "No hay sesión activa para cerrar" });
+    }
+
+    try {
+      jwt.verify(token, ENV.SECRET_JWT_KEY);
+    } catch {
+      return res.status(400).json({
+        message: "Token inválido",
+      });
+    }
+
+    res
+      .clearCookie("access_token", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+      })
+      .status(200)
+      .json({ message: "Logout exitoso" });
+    return;
+  }
 }
