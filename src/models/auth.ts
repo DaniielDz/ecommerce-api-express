@@ -1,44 +1,33 @@
-import { readFile, writeFile } from "node:fs/promises";
-import path from "node:path";
-import { PublicUser, User } from "../types";
+import { PublicUser, RegisterParams } from "../types";
+import { prisma } from "../utils/prismaClient";
 
-const url = path.resolve(__dirname, "../data/db.json");
 export class AuthModel {
-  static async register(user: User) {
-    const users = await this.getUsers();
+  static async register({ username, password_hash }: RegisterParams) {
+    const newUser = await prisma.user.create({
+      data: {
+        username,
+        password_hash,
+      },
+    });
 
-    const newUsers = [...users, user];
-
-    try {
-      await writeFile(url, JSON.stringify(newUsers, null, 2));
-    } catch {
-      throw new Error("IO_ERROR");
-    }
-
-    const { password, ...publicUser } = user;
+    const { password_hash: _, ...publicUser } = newUser;
 
     return publicUser as PublicUser;
   }
 
-  static async getUsers() {
-    let readResponse;
+  static async getUserByUsername(username: string) {
+    const user = await prisma.user.findUnique({
+      where: {
+        username: username,
+      },
+    });
 
-    try {
-      readResponse = await readFile(url, { encoding: "utf-8" });
-    } catch {
-      throw new Error("IO_ERROR");
-    }
-
-    const users: User[] = JSON.parse(readResponse);
-
-    return users;
+    return user;
   }
 
-  static async getUserByUsername(username: string) {
-    const users = await this.getUsers();
+  static async getUsers() {
+    const users = await prisma.user.findMany();
 
-    const existUser = users.find((u) => u.username === username);
-
-    return existUser ?? null;
+    return users;
   }
 }

@@ -3,3 +3,5 @@ dist/
 .env
 .DS_Store
 .vscode/
+docs/
+/src/generated/prisma

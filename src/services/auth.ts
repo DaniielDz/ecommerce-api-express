@@ -1,11 +1,10 @@
-import { randomUUID } from "node:crypto";
 import { AuthModel } from "../models/auth";
 import {
-  RegisterParams,
   Result,
   DomainError,
   InfraError,
   PublicUser,
+  UserDTO,
 } from "../types";
 import bcrypt from "bcrypt";
 
@@ -13,7 +12,7 @@ export class AuthService {
   static async register({
     username,
     password,
-  }: RegisterParams): Promise<Result<PublicUser, DomainError | InfraError>> {
+  }: UserDTO): Promise<Result<PublicUser, DomainError | InfraError>> {
     try {
       const existUser = await AuthModel.getUserByUsername(username);
       if (existUser) {
@@ -23,9 +22,8 @@ export class AuthService {
       const passwordHash = await bcrypt.hash(password, 10);
 
       const newUser = {
-        id: randomUUID(),
         username,
-        password: passwordHash,
+        password_hash: passwordHash,
       };
 
       const created = await AuthModel.register(newUser);
@@ -38,7 +36,7 @@ export class AuthService {
   static async login({
     username,
     password,
-  }: RegisterParams): Promise<Result<PublicUser, DomainError | InfraError>> {
+  }: UserDTO): Promise<Result<PublicUser, DomainError | InfraError>> {
     try {
       const user = await AuthModel.getUserByUsername(username);
 
@@ -46,13 +44,13 @@ export class AuthService {
         return { ok: false, error: "INVALID_CREDENTIALS" };
       }
 
-      const isPasswordValid = await bcrypt.compare(password, user.password);
+      const isPasswordValid = await bcrypt.compare(password, user.password_hash);
 
       if (!isPasswordValid) {
         return { ok: false, error: "INVALID_CREDENTIALS" };
       }
 
-      const { password: pwd, ...publicUser } = user;
+      const { password_hash: pwd, ...publicUser } = user;
 
       return { ok: true, data: publicUser as PublicUser };
     } catch {

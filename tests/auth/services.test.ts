@@ -22,6 +22,8 @@ describe("AuthService", () => {
       mockAuthModel.register.mockResolvedValue({
         id: "UUID",
         username: "usuario1",
+        created_at: new Date(),
+        updated_at: new Date(),
       });
 
       const res = await AuthService.register({
@@ -39,7 +41,9 @@ describe("AuthService", () => {
       mockAuthModel.getUserByUsername.mockResolvedValue({
         id: "UUID",
         username: "usuario1",
-        password: "123",
+        password_hash: "hashedPwd",
+        created_at: new Date(),
+        updated_at: new Date(),
       });
 
       const res = await AuthService.register({
@@ -56,7 +60,9 @@ describe("AuthService", () => {
       mockAuthModel.getUserByUsername.mockResolvedValue({
         id: "UUID",
         username: "usuario",
-        password: "hashedPwd",
+        password_hash: "hashedPwd",
+        created_at: new Date(),
+        updated_at: new Date(),
       });
       (mockBcrypt.compare as jest.Mock).mockResolvedValue(true);
 
@@ -72,7 +78,9 @@ describe("AuthService", () => {
       mockAuthModel.getUserByUsername.mockResolvedValue({
         id: "UUID",
         username: "usuario",
-        password: "hashedPwd",
+        password_hash: "hashedPwd",
+        created_at: new Date(),
+        updated_at: new Date(),
       });
       (mockBcrypt.compare as jest.Mock).mockResolvedValue(false);
 

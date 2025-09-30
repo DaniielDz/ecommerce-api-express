@@ -2,10 +2,10 @@ import { Request, Response } from "express";
 import { AuthService } from "../services/auth";
 import jwt from "jsonwebtoken";
 import { ENV } from "../config/env";
+import { UserDTO } from "../types";
 export class AuthController {
   static async register(req: Request, res: Response) {
-    const { username, password }: { username: string; password: string } =
-      req.body;
+    const { username, password }: UserDTO = req.body;
 
     if (!username || !password) {
       return res.status(400).json({
@@ -29,8 +29,7 @@ export class AuthController {
   }
 
   static async login(req: Request, res: Response) {
-    const { username, password }: { username: string; password: string } =
-      req.body;
+    const { username, password }: UserDTO = req.body;
     if (!username || !password) {
       return res.status(400).json({
         message: "El nombre de usuario y la contraseña son obligatorios",

@@ -1,4 +1,4 @@
 export interface RegisterParams {
   username: string;
-  password: string;
+  password_hash: string;
 }
