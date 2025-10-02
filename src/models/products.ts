@@ -1,11 +1,11 @@
-import { Prisma, Products } from "@prisma/client";
+import { Prisma, Product,  } from "@prisma/client";
 import { prisma } from "../utils/prismaClient";
 import { ProductsFilters } from "../schemas/products";
 
 export class ProductsModel {
-  static async getAll(filters?: ProductsFilters): Promise<Products[]> {
+  static async getAll(filters?: ProductsFilters): Promise<Product[]> {
     const { name, priceRange } = filters ?? {};
-    const whereCondition: Prisma.ProductsWhereInput = {};
+    const whereCondition: Prisma.ProductWhereInput = {};
 
     if (name) {
       whereCondition.name = {
@@ -21,7 +21,7 @@ export class ProductsModel {
       };
     }
 
-    const products = await prisma.products.findMany({ where: whereCondition });
+    const products = await prisma.product.findMany({ where: whereCondition });
 
     return products;
   }
