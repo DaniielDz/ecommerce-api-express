@@ -24,3 +24,13 @@ model User {
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
 }
+
+model Products {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @db.VarChar(100)
+  description String   @db.VarChar(255)
+  price       Float
+  image_url   String   @db.VarChar(255)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
