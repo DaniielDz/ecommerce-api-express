@@ -40,4 +40,6 @@ export const productsFiltersSchema = z.object({
   }).optional(),
 });
 
+export const idSchema = z.uuid();
+
 export type ProductsFilters = z.infer<typeof productsFiltersSchema>;

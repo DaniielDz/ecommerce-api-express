@@ -5,11 +5,30 @@ import { ProductsFilters } from "../schemas/products";
 
 export class ProductsService {
   static async getAll(
-    filters?: ProductsFilters 
+    filters?: ProductsFilters
   ): Promise<Result<Product[], DomainError | InfraError>> {
     try {
       const products = await ProductsModel.getAll(filters);
       return { ok: true, data: products };
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        return { ok: false, error: "DB_ERROR" };
+      }
+      console.log("Error no clasificado en ProductsService", error);
+      return { ok: false, error: "IO_ERROR" };
+    }
+  }
+
+  static async getById(
+    id: string
+  ): Promise<Result<Product, DomainError | InfraError>> {
+    try {
+      const product = await ProductsModel.getById(id);
+      if (!product) {
+        return { ok: false, error: "PRODUCT_NOT_FOUND" };
+      }
+
+      return { ok: true, data: product };
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         return { ok: false, error: "DB_ERROR" };

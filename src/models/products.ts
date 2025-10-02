@@ -1,4 +1,4 @@
-import { Prisma, Product,  } from "@prisma/client";
+import { Prisma, Product } from "@prisma/client";
 import { prisma } from "../utils/prismaClient";
 import { ProductsFilters } from "../schemas/products";
 
@@ -24,5 +24,11 @@ export class ProductsModel {
     const products = await prisma.product.findMany({ where: whereCondition });
 
     return products;
+  }
+
+  static async getById(id: string): Promise<Product | null> {
+    const product = await prisma.product.findUnique({ where: { id } });
+
+    return product;
   }
 }
