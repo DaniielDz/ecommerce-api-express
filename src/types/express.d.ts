@@ -1,3 +1,4 @@
+import { ProductsFilters } from "../schemas/products";
 import { PublicUser } from "./user";
 
 declare global {
@@ -6,6 +7,7 @@ declare global {
       session?: {
         user: PublicUser | null;
       };
+      productFilters?: ProductsFilters;
     }
   }
 }
