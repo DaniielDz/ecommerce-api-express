@@ -1,7 +1,7 @@
 import { Prisma, Product } from "@prisma/client";
 import { DomainError, InfraError, Result } from "../types";
 import { ProductsModel } from "../models/products";
-import { ProductsFilters } from "../schemas/products";
+import { ProductPost, ProductsFilters } from "../schemas/products";
 
 export class ProductsService {
   static async getAll(
@@ -28,6 +28,19 @@ export class ProductsService {
         return { ok: false, error: "PRODUCT_NOT_FOUND" };
       }
 
+      return { ok: true, data: product };
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        return { ok: false, error: "DB_ERROR" };
+      }
+      console.log("Error no clasificado en ProductsService", error);
+      return { ok: false, error: "IO_ERROR" };
+    }
+  }
+
+  static async create(newProduct: ProductPost) {
+    try {
+      const product = await ProductsModel.create(newProduct)
       return { ok: true, data: product };
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {

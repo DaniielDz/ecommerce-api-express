@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { ProductsService } from "../services/products";
-import { idSchema } from "../schemas/products";
+import { idSchema, ProductPost } from "../schemas/products";
 
 export class ProductsController {
   static async getAll(req: Request, res: Response) {
@@ -44,5 +44,24 @@ export class ProductsController {
     }
 
     return res.json(result.data);
+  }
+
+  static async create(req: Request, res: Response) {
+    const newProduct: ProductPost = req.body;
+
+    const result = await ProductsService.create(newProduct)
+
+    if(!result.ok) {
+      let status = 500;
+      let message = "Error interno del servidor";
+
+      if(result.error === "DB_ERROR") {
+        message = "Error en la base de datos"
+      }
+
+      return res.status(status).json({ error: message });
+    }
+
+    return res.status(201).json(result.data)
   }
 }

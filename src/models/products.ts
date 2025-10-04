@@ -1,6 +1,6 @@
 import { Prisma, Product } from "@prisma/client";
 import { prisma } from "../utils/prismaClient";
-import { ProductsFilters } from "../schemas/products";
+import { ProductPost, ProductsFilters } from "../schemas/products";
 
 export class ProductsModel {
   static async getAll(filters?: ProductsFilters): Promise<Product[]> {
@@ -30,5 +30,10 @@ export class ProductsModel {
     const product = await prisma.product.findUnique({ where: { id } });
 
     return product;
+  }
+
+  static async create(newProduct: ProductPost) {
+    const productCreated = await prisma.product.create({ data: newProduct });
+    return productCreated;
   }
 }

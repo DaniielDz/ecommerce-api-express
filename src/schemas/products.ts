@@ -43,3 +43,12 @@ export const productsFiltersSchema = z.object({
 export const idSchema = z.uuid();
 
 export type ProductsFilters = z.infer<typeof productsFiltersSchema>;
+
+export const productSchema = z.object({
+  name: z.string().max(100),
+  description: z.string().max(255),
+  price: z.number().positive(),
+  image_url: z.url()
+})
+
+export type ProductPost = z.infer<typeof productSchema>
