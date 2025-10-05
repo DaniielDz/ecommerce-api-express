@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { ProductsService } from "../services/products";
-import { idSchema, ProductPost } from "../schemas/products";
+import { ProductPost } from "../schemas/products";
 
 export class ProductsController {
   static async getAll(req: Request, res: Response) {
@@ -21,13 +21,12 @@ export class ProductsController {
 
   static async getById(req: Request, res: Response) {
     const { id } = req.params;
-    const { success, data: parsedId } = idSchema.safeParse(id);
 
-    if (!success) {
-      return res.status(400).json({ error: "Formato de ID inválido" });
+    if (!id) {
+      return res.status(400).json({ error: "ID de producto requerido" });
     }
 
-    const result = await ProductsService.getById(parsedId);
+    const result = await ProductsService.getById(id);
 
     if (!result.ok) {
       let status = 500;
@@ -49,19 +48,19 @@ export class ProductsController {
   static async create(req: Request, res: Response) {
     const newProduct: ProductPost = req.body;
 
-    const result = await ProductsService.create(newProduct)
+    const result = await ProductsService.create(newProduct);
 
-    if(!result.ok) {
+    if (!result.ok) {
       let status = 500;
       let message = "Error interno del servidor";
 
-      if(result.error === "DB_ERROR") {
-        message = "Error en la base de datos"
+      if (result.error === "DB_ERROR") {
+        message = "Error en la base de datos";
       }
 
       return res.status(status).json({ error: message });
     }
 
-    return res.status(201).json(result.data)
+    return res.status(201).json(result.data);
   }
 }

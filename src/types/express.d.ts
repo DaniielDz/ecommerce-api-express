@@ -8,6 +8,7 @@ declare global {
         user: PublicUser | null;
       };
       productFilters?: ProductsFilters;
+      params: { id?: number | string };
     }
   }
 }
