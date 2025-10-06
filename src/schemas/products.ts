@@ -34,10 +34,12 @@ export const productsQuerySchema = z.object({
 
 export const productsFiltersSchema = z.object({
   name: z.string().optional(),
-  priceRange: z.object({
-    min: z.number(),
-    max: z.number(),
-  }).optional(),
+  priceRange: z
+    .object({
+      min: z.number(),
+      max: z.number(),
+    })
+    .optional(),
 });
 
 export const idSchema = z.uuid();
@@ -48,7 +50,10 @@ export const productSchema = z.object({
   name: z.string().max(100),
   description: z.string().max(255),
   price: z.number().positive(),
-  image_url: z.url()
-})
+  image_url: z.url(),
+});
 
-export type ProductPost = z.infer<typeof productSchema>
+export const productPatchSchema = productSchema.partial();
+
+export type ProductPost = z.infer<typeof productSchema>;
+export type ProductPatch = z.infer<typeof productPatchSchema>;
