@@ -4,26 +4,30 @@ import {
   DomainError,
   InfraError,
   PublicUser,
-  UserDTO,
+  UserRegister,
 } from "../types";
 import bcrypt from "bcrypt";
 
 export class AuthService {
   static async register({
-    username,
+    email,
     password,
-  }: UserDTO): Promise<Result<PublicUser, DomainError | InfraError>> {
+    firstName,
+    lastName,
+  }: UserRegister): Promise<Result<PublicUser, DomainError | InfraError>> {
     try {
-      const existUser = await AuthModel.getUserByUsername(username);
+      const existUser = await AuthModel.getUserByEmail(email);
       if (existUser) {
-        return { ok: false, error: "USERNAME_TAKEN" };
+        return { ok: false, error: "EMAIL_IN_USE" };
       }
 
       const passwordHash = await bcrypt.hash(password, 10);
 
       const newUser = {
-        username,
-        password_hash: passwordHash,
+        email,
+        passwordHash,
+        firstName,
+        lastName,
       };
 
       const created = await AuthModel.register(newUser);
@@ -44,7 +48,10 @@ export class AuthService {
         return { ok: false, error: "INVALID_CREDENTIALS" };
       }
 
-      const isPasswordValid = await bcrypt.compare(password, user.password_hash);
+      const isPasswordValid = await bcrypt.compare(
+        password,
+        user.password_hash
+      );
 
       if (!isPasswordValid) {
         return { ok: false, error: "INVALID_CREDENTIALS" };

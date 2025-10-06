@@ -5,21 +5,21 @@ import { ENV } from "../config/env";
 import { UserDTO } from "../types";
 export class AuthController {
   static async register(req: Request, res: Response) {
-    const { username, password }: UserDTO = req.body;
+    const { email, password, firstName, lastName }: UserDTO = req.body;
 
-    if (!username || !password) {
+    if (!email || !password || !firstName || !lastName) {
       return res.status(400).json({
-        message: "El nombre de usuario y la contraseña son obligatorios",
+        message: "El email, la contraseña, el nombre y el apellido son obligatorios",
       });
     }
 
-    const result = await AuthService.register({ username, password });
+    const result = await AuthService.register({ email, password, firstName, lastName });
 
     if (!result.ok) {
-      if (result.error === "USERNAME_TAKEN") {
+      if (result.error === "EMAIL_IN_USE") {
         return res
           .status(409)
-          .json({ message: `El nombre de usuario ${username} ya existe` });
+          .json({ message: `El email ${email} ya está en uso` });
       }
 
       return res.status(500).json({ message: "Error interno" });

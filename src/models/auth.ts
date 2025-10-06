@@ -2,23 +2,25 @@ import { PublicUser, RegisterParams } from "../types";
 import { prisma } from "../utils/prismaClient";
 
 export class AuthModel {
-  static async register({ username, password_hash }: RegisterParams) {
+  static async register({ email, passwordHash, firstName, lastName }: RegisterParams) {
     const newUser = await prisma.user.create({
       data: {
-        username,
-        password_hash,
+        email,
+        passwordHash,
+        firstName,
+        lastName,
       },
     });
 
-    const { password_hash: _, ...publicUser } = newUser;
+    const { passwordHash: _, ...publicUser } = newUser;
 
     return publicUser as PublicUser;
   }
 
-  static async getUserByUsername(username: string) {
+  static async getUserByEmail(email: string) {
     const user = await prisma.user.findUnique({
       where: {
-        username: username,
+        email,
       },
     });
 
