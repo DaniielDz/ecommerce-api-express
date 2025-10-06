@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { ProductsService } from "../services/products";
-import { ProductPost } from "../schemas/products";
+import { ProductPatch, ProductPost } from "../schemas/products";
 
 export class ProductsController {
   static async getAll(req: Request, res: Response) {
@@ -71,6 +71,58 @@ export class ProductsController {
     }
 
     const result = await ProductsService.delete(id);
+
+    if (!result.ok) {
+      let status = 500;
+      let message = "Error interno del servidor";
+
+      if (result.error === "PRODUCT_NOT_FOUND") {
+        status = 404;
+        message = "Producto no encontrado";
+      } else if (result.error === "DB_ERROR") {
+        message = "Error en la base de datos";
+      }
+
+      return res.status(status).json({ error: message });
+    }
+
+    return res.json(result.data);
+  }
+
+  static async update(req: Request, res: Response) {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ error: "ID de producto requerido" });
+    }
+    const productData: ProductPatch = req.body;
+
+    const result = await ProductsService.update(id, productData);
+
+    if (!result.ok) {
+      let status = 500;
+      let message = "Error interno del servidor";
+
+      if (result.error === "PRODUCT_NOT_FOUND") {
+        status = 404;
+        message = "Producto no encontrado";
+      } else if (result.error === "DB_ERROR") {
+        message = "Error en la base de datos";
+      }
+
+      return res.status(status).json({ error: message });
+    }
+
+    return res.json(result.data);
+  }
+
+  static async replace(req: Request, res: Response) {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ error: "ID de producto requerido" });
+    }
+
+    const productData: ProductPost = req.body;
+    const result = await ProductsService.replace(id, productData);
 
     if (!result.ok) {
       let status = 500;

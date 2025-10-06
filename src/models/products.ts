@@ -1,6 +1,10 @@
 import { Prisma, Product } from "@prisma/client";
 import { prisma } from "../utils/prismaClient";
-import { ProductPost, ProductsFilters } from "../schemas/products";
+import {
+  ProductPatch,
+  ProductPost,
+  ProductsFilters,
+} from "../schemas/products";
 
 export class ProductsModel {
   static async getAll(filters?: ProductsFilters): Promise<Product[]> {
@@ -43,5 +47,23 @@ export class ProductsModel {
     });
 
     return productDeleted;
+  }
+
+  static async update(id: string, productData: ProductPatch) {
+    const productUpdated = await prisma.product.update({
+      where: { id },
+      data: productData as Prisma.ProductUpdateInput,
+    });
+
+    return productUpdated;
+  }
+
+  static async replace(id: string, productData: ProductPost) {
+    const productReplaced = await prisma.product.update({
+      where: { id },
+      data: productData,
+    });
+
+    return productReplaced;
   }
 }
