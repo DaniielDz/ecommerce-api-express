@@ -13,26 +13,190 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id            String   @id @default(uuid()) @db.Uuid
-  username      String   @unique @db.VarChar(50)
-  // email         String   @unique @db.VarChar(255)
-  password_hash String   @db.VarChar(255)
-  // first_name    String   @db.VarChar(100)
-  // last_name     String   @db.VarChar(100)
-  // role          String   @default("user") @db.VarChar(20)
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
+enum Role {
+  CUSTOMER
+  ADMIN
 }
 
+// 👤 MODELO DE USUARIOS
+// Almacena los datos de inicio de sesión y perfil.
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  firstName    String   @map("first_name") @db.VarChar(100)
+  lastName     String   @map("last_name") @db.VarChar(100)
+  email        String   @unique @db.VarChar(255)
+  passwordHash String   @map("password_hash") @db.VarChar(255)
+  role         Role     @default(CUSTOMER)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relaciones
+  addresses Address[]
+  orders    Order[]
+  cart      Cart?
+
+  @@map("users")
+}
+
+// 🏠 MODELO DE DIRECCIONES
+// Libreta de direcciones para cada usuario.
+model Address {
+  id           String   @id @default(uuid()) @db.Uuid
+  addressLine1 String   @map("address_line_1") @db.VarChar(255)
+  addressLine2 String?  @map("address_line_2") @db.VarChar(255)
+  city         String   @db.VarChar(100)
+  state        String   @db.VarChar(100)
+  postalCode   String   @map("postal_code") @db.VarChar(20)
+  country      String   @db.VarChar(100)
+  isDefault    Boolean  @default(false) @map("is_default")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relación con el usuario
+  userId String @map("user_id") @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("addresses")
+}
+
+// 📦 MODELO DE PRODUCTOS
+// Catálogo de productos de la tienda.
 model Product {
   id          String   @id @default(uuid()) @db.Uuid
-  name        String   @db.VarChar(100)
-  description String   @db.VarChar(255)
-  price       Float
-  image_url   String   @db.VarChar(255)
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  name        String   @db.VarChar(255)
+  description String   @db.Text
+  sku         String   @unique @db.VarChar(100) // Stock Keeping Unit
+  price       Decimal  @db.Decimal(10, 2)
+  stock       Int      @default(0)
+  imageUrl    String?  @map("image_url") @db.VarChar(255)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
-  @@map("Product")
+  // Relación con la categoría
+  categoryId Int      @map("category_id")
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  // Relaciones inversas
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+
+  @@map("products")
+}
+
+// 🏷️ MODELO DE CATEGORÍAS
+// Para organizar los productos.
+model Category {
+  id          Int     @id @default(autoincrement())
+  name        String  @unique @db.VarChar(100)
+  description String? @db.Text
+
+  // Relación
+  products Product[]
+
+  @@map("categories")
+}
+
+// 🛒 MODELO DE CARRITO
+// Contenedor principal del carrito de un usuario.
+model Cart {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relación: Un carrito por usuario
+  userId String @unique @map("user_id") @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Relación con los items del carrito
+  items CartItem[]
+
+  @@map("carts")
+}
+
+// ITEMS DEL CARRITO
+// Representa un producto dentro de un carrito.
+model CartItem {
+  id        Int      @id @default(autoincrement())
+  quantity  Int
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relación con el carrito
+  cartId String @map("cart_id") @db.Uuid
+  cart   Cart   @relation(fields: [cartId], references: [id], onDelete: Cascade)
+
+  // Relación con el producto
+  productId String  @map("product_id") @db.Uuid
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  // Constraint para evitar duplicados del mismo producto en el mismo carrito.
+  @@unique([cartId, productId])
+  @@map("cart_items")
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+// 🧾 MODELO DE ÓRDENES
+// Almacena un registro histórico de una compra.
+model Order {
+  id                  String      @id @default(uuid()) @db.Uuid
+  total               Decimal     @db.Decimal(10, 2)
+  status              OrderStatus @default(PENDING)
+  // Guardamos la dirección como JSON para que sea inmutable.
+  // Si el usuario cambia su dirección guardada, el historial de la orden no se altera.
+  shippingAddressJson Json        @map("shipping_address_json")
+  createdAt           DateTime    @default(now()) @map("created_at")
+  updatedAt           DateTime    @updatedAt @map("updated_at")
+
+  // Relación con el usuario
+  userId String @map("user_id") @db.Uuid
+  user   User   @relation(fields: [userId], references: [id])
+
+  // Relaciones inversas
+  items   OrderItem[]
+  payment Payment?
+
+  @@map("orders")
+}
+
+// ITEMS DE LA ORDEN
+// Representa un producto dentro de una orden.
+model OrderItem {
+  id       Int     @id @default(autoincrement())
+  quantity Int
+  // Guardamos el precio al momento de la compra para que el registro sea histórico y no cambie.
+  price    Decimal @db.Decimal(10, 2)
+
+  // Relación con la orden
+  orderId String @map("order_id") @db.Uuid
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  // Relación con el producto
+  productId String  @map("product_id") @db.Uuid
+  product   Product @relation(fields: [productId], references: [id])
+
+  @@map("order_items")
+}
+
+// 💳 MODELO DE PAGOS
+// Registro de la transacción financiera asociada a una orden.
+model Payment {
+  id                    String   @id @default(uuid()) @db.Uuid
+  amount                Decimal  @db.Decimal(10, 2)
+  paymentProvider       String   @map("payment_provider") @db.VarChar(100)
+  providerTransactionId String   @map("provider_transaction_id") @db.VarChar(255)
+  status                String   @default("pending") @db.VarChar(50) // "pending", "completed", "failed"
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  // Relación: Un pago por orden
+  orderId String @unique @map("order_id") @db.Uuid
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
 }
