@@ -63,4 +63,29 @@ export class ProductsController {
 
     return res.status(201).json(result.data);
   }
+
+  static async delete(req: Request, res: Response) {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ error: "ID de producto requerido" });
+    }
+
+    const result = await ProductsService.delete(id);
+
+    if (!result.ok) {
+      let status = 500;
+      let message = "Error interno del servidor";
+
+      if (result.error === "PRODUCT_NOT_FOUND") {
+        status = 404;
+        message = "Producto no encontrado";
+      } else if (result.error === "DB_ERROR") {
+        message = "Error en la base de datos";
+      }
+
+      return res.status(status).json({ error: message });
+    }
+
+    return res.json(result.data);
+  }
 }

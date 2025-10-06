@@ -36,4 +36,12 @@ export class ProductsModel {
     const productCreated = await prisma.product.create({ data: newProduct });
     return productCreated;
   }
+
+  static async delete(id: string) {
+    const productDeleted = await prisma.product.delete({
+      where: { id },
+    });
+
+    return productDeleted;
+  }
 }

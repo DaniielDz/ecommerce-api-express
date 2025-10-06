@@ -40,10 +40,29 @@ export class ProductsService {
 
   static async create(newProduct: ProductPost) {
     try {
-      const product = await ProductsModel.create(newProduct)
+      const product = await ProductsModel.create(newProduct);
       return { ok: true, data: product };
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        return { ok: false, error: "DB_ERROR" };
+      }
+      console.log("Error no clasificado en ProductsService", error);
+      return { ok: false, error: "IO_ERROR" };
+    }
+  }
+
+  static async delete(
+    id: string
+  ): Promise<Result<Product, DomainError | InfraError>> {
+    try {
+      const productDeleted = await ProductsModel.delete(id);
+
+      return { ok: true, data: productDeleted };
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === "P2025") {
+          return { ok: false, error: "PRODUCT_NOT_FOUND" };
+        }
         return { ok: false, error: "DB_ERROR" };
       }
       console.log("Error no clasificado en ProductsService", error);
