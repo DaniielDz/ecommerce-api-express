@@ -1,19 +1,36 @@
+import { $Enums } from "@prisma/client";
+
 export interface User {
   id: string;
-  username: string;
-  password_hash: string;
-  created_at: Date;
-  updated_at: Date;
+  firstName: string;
+  lastName: string;
+  email: string;
+  passwordHash: string;
+  role: $Enums.Role;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface PublicUser {
   id: string;
-  username: string;
-  created_at: Date;
-  updated_at: Date;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: $Enums.Role;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface UserDTO {
-  username: string;
+export interface UserRegister {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+}
+
+export interface UserLogin {
+  email: string;
   password: string;
 }
+
+export type UserDTO = Partial<UserRegister & UserLogin>;
