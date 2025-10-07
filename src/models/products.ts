@@ -37,7 +37,13 @@ export class ProductsModel {
   }
 
   static async create(newProduct: ProductPost) {
-    const productCreated = await prisma.product.create({ data: newProduct });
+    const { categoryId, ...productData } = newProduct;
+    const dataToCreate: Prisma.ProductCreateInput = {
+      ...productData,
+      imageUrl: productData.imageUrl ?? null,
+      category: { connect: { id: categoryId } },
+    };
+    const productCreated = await prisma.product.create({ data: dataToCreate });
     return productCreated;
   }
 
@@ -59,9 +65,15 @@ export class ProductsModel {
   }
 
   static async replace(id: string, productData: ProductPost) {
+    const { categoryId, ...newData } = productData;
+    const dataToReplace: Prisma.ProductUpdateInput = {
+      ...newData,
+      imageUrl: newData.imageUrl ?? null,
+      category: { connect: { id: categoryId } },
+    };
     const productReplaced = await prisma.product.update({
       where: { id },
-      data: productData,
+      data: dataToReplace,
     });
 
     return productReplaced;
