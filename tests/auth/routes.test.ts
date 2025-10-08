@@ -1,15 +1,16 @@
 import request from "supertest";
 import app from "../../src/app";
-import { User } from "../../src/types";
+import { RegisterParams, User } from "../../src/types";
 
-const makeUser = (
-  data: Partial<User> & { username: string; password_hash: string }
-): User => ({
+const makeUser = (data: RegisterParams): User => ({
   id: "UUID",
-  username: data.username,
-  password_hash: data.password_hash,
-  created_at: new Date(),
-  updated_at: new Date(),
+  email: data.email,
+  passwordHash: data.passwordHash || "pwd",
+  firstName: data.firstName,
+  lastName: data.lastName,
+  role: "CUSTOMER",
+  createdAt: new Date(),
+  updatedAt: new Date(),
 });
 
 let users: User[] = [];
@@ -18,22 +19,14 @@ jest.mock("../../src/utils/prismaClient", () => {
   return {
     prisma: {
       user: {
-        create: jest.fn(
-          async ({
-            data,
-          }: {
-            data: { username: string; password_hash: string };
-          }) => {
-            const u = makeUser(data);
-            users.push(u);
-            // El modelo devuelve `PublicUser` (sin password_hash), pero
-            // aquí devolvemos el registro completo y el modelo ya hace el strip.
-            return u;
-          }
-        ),
+        create: jest.fn(async ({ data }: { data: RegisterParams }) => {
+          const u = makeUser(data);
+          users.push(u);
+          return u;
+        }),
         findUnique: jest.fn(
-          async ({ where: { username } }: { where: { username: string } }) => {
-            return users.find((u) => u.username === username) ?? null;
+          async ({ where: { email } }: { where: { email: string } }) => {
+            return users.find((u) => u.email === email) ?? null;
           }
         ),
         findMany: jest.fn(async () => users),
@@ -50,12 +43,17 @@ describe("Auth routes", () => {
   test("register -> 201", async () => {
     const res = await request(app)
       .post("/auth/register")
-      .send({ username: "john", password: "pwd" })
+      .send({
+        email: "john@gmail.com",
+        password: "pwd",
+        firstName: "John",
+        lastName: "Doe",
+      })
       .expect(201);
 
     expect(res.body).toMatchObject({
       id: expect.any(String),
-      username: "john",
+      email: "john@gmail.com",
     });
     expect(res.body).not.toHaveProperty("password_hash");
   });
@@ -63,10 +61,16 @@ describe("Auth routes", () => {
   test("login -> 200 y setea cookie", async () => {
     await request(app)
       .post("/auth/register")
-      .send({ username: "doe", password: "pwd" });
+      .send({
+        email: "john@gmail.com",
+        password: "pwd",
+        firstName: "John",
+        lastName: "Doe",
+      })
+      .expect(201);
     const res = await request(app)
       .post("/auth/login")
-      .send({ username: "doe", password: "pwd" })
+      .send({ email: "john@gmail.com", password: "pwd" })
       .expect(200);
 
     expect(res.headers["set-cookie"]).toEqual(
@@ -80,13 +84,16 @@ describe("Auth routes", () => {
   });
 
   test("logout con cookie -> 200", async () => {
-    await request(app)
-      .post("/auth/register")
-      .send({ username: "mike", password: "pwd" });
+    await request(app).post("/auth/register").send({
+      email: "john@gmail.com",
+      password: "pwd",
+      firstName: "John",
+      lastName: "Doe",
+    });
     const cookie = (
       await request(app)
         .post("/auth/login")
-        .send({ username: "mike", password: "pwd" })
+        .send({ email: "john@gmail.com", password: "pwd" })
     ).headers["set-cookie"];
 
     const res = await request(app)

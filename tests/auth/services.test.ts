@@ -1,73 +1,67 @@
 import { AuthModel } from "../../src/models/auth";
 import bcrypt from "bcrypt";
 import { AuthService } from "../../src/services/auth";
+import { PublicUser, UserRegister } from "../../src/types";
+import { User } from "@prisma/client";
 
-// En vez de usar la implementación real de AuthModel y bcrypt, usar versiones mockeadas.
 jest.mock("../../src/models/auth");
 jest.mock("bcrypt");
 
 describe("AuthService", () => {
-  // jest.mocked le dice a TypeScript:
-  // Trata AuthModel y bcrypt como mocks tipados.
   const mockAuthModel = jest.mocked(AuthModel);
   const mockBcrypt = jest.mocked(bcrypt);
 
-  // Antes de cada test resetear todos los mocks
+  const publicUser: PublicUser = {
+    id: "UUID",
+    email: "john@test.com",
+    firstName: "John",
+    lastName: "Doe",
+    role: "CUSTOMER",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
+  const user: User = { ...publicUser, passwordHash: "hash" };
+
+  const dataForRegister: UserRegister = {
+    email: "john@test.com",
+    firstName: "John",
+    lastName: "Doe",
+    password: "123456",
+  };
+
   beforeEach(() => jest.resetAllMocks());
 
   describe("Register", () => {
-    test("Crea un usuario cuando username no existe", async () => {
-      mockAuthModel.getUserByUsername.mockResolvedValue(null);
+    test("Crea un usuario cuando el email no existe", async () => {
+      mockAuthModel.getUserByEmail.mockResolvedValue(null);
       (mockBcrypt.hash as jest.Mock).mockResolvedValue("hash");
-      mockAuthModel.register.mockResolvedValue({
-        id: "UUID",
-        username: "usuario1",
-        created_at: new Date(),
-        updated_at: new Date(),
-      });
+      mockAuthModel.register.mockResolvedValue(publicUser);
 
-      const res = await AuthService.register({
-        username: "usuario1",
-        password: "123456",
-      });
+      const res = await AuthService.register(dataForRegister);
 
       expect(res.ok).toBe(true);
       if (res.ok) {
-        expect(res.data.username).toBe("usuario1");
+        expect(res.data.email).toBe("john@test.com");
       }
     });
 
-    test("Si existe el usuario retornar el error USERNAME_TAKEN", async () => {
-      mockAuthModel.getUserByUsername.mockResolvedValue({
-        id: "UUID",
-        username: "usuario1",
-        password_hash: "hashedPwd",
-        created_at: new Date(),
-        updated_at: new Date(),
-      });
+    test("Si existe el email retornar el error EMAIL_IN_USE", async () => {
+      mockAuthModel.getUserByEmail.mockResolvedValue(user);
 
-      const res = await AuthService.register({
-        username: "usuario1",
-        password: "123456",
-      });
+      const res = await AuthService.register(dataForRegister);
 
-      expect(res).toEqual({ ok: false, error: "USERNAME_TAKEN" });
+      expect(res).toEqual({ ok: false, error: "EMAIL_IN_USE" });
     });
   });
 
   describe("Login", () => {
     test("Credenciales validas", async () => {
-      mockAuthModel.getUserByUsername.mockResolvedValue({
-        id: "UUID",
-        username: "usuario",
-        password_hash: "hashedPwd",
-        created_at: new Date(),
-        updated_at: new Date(),
-      });
+      mockAuthModel.getUserByEmail.mockResolvedValue(user);
       (mockBcrypt.compare as jest.Mock).mockResolvedValue(true);
 
       const res = await AuthService.login({
-        username: "usuario",
+        email: "john@test.com",
         password: "pwd",
       });
 
@@ -75,28 +69,22 @@ describe("AuthService", () => {
     });
 
     test("Credenciales invalidas: Password", async () => {
-      mockAuthModel.getUserByUsername.mockResolvedValue({
-        id: "UUID",
-        username: "usuario",
-        password_hash: "hashedPwd",
-        created_at: new Date(),
-        updated_at: new Date(),
-      });
+      mockAuthModel.getUserByEmail.mockResolvedValue(user);
       (mockBcrypt.compare as jest.Mock).mockResolvedValue(false);
 
       const res = await AuthService.login({
-        username: "usuario",
+        email: "john@test.com",
         password: "pwdIncorrecto",
       });
 
       expect(res).toEqual({ ok: false, error: "INVALID_CREDENTIALS" });
     });
 
-    test("Credenciales invalidas: Username", async () => {
-      mockAuthModel.getUserByUsername.mockResolvedValue(null);
+    test("Credenciales invalidas: Email", async () => {
+      mockAuthModel.getUserByEmail.mockResolvedValue(null);
 
       const res = await AuthService.login({
-        username: "usuarioincorrecto",
+        email: "john@test.com",
         password: "pwd",
       });
 
