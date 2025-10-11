@@ -1,21 +1,22 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { AppError } from "../errors/AppError";
 
 export const isAuthenticated = (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ) => {
   const token = req.cookies["access_token"];
 
   if (!token) {
-    return res.status(401).json("Usuario no autenticado.");
+    return next(new AppError("Usuario no autenticado.", 401));
   }
 
   try {
     jwt.verify(token, process.env.SECRET_JWT_KEY);
     return next();
   } catch {
-    return res.status(400).json("Token Invalido");
+    return next(new AppError("Token Invalido", 401));
   }
 };
