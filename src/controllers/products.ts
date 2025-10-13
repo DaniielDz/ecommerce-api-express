@@ -1,143 +1,156 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { ProductsService } from "../services/products";
-import { ProductPatch, ProductPost } from "../schemas/products";
+import { ProductPatch, ProductPost } from "../schemas/products/body";
+import { ProductsFilters } from "../schemas/products/query";
+import { AppError } from "../errors/AppError";
 
 export class ProductsController {
-  static async getAll(req: Request, res: Response) {
-    const filters = req.productFilters ?? undefined;
+  static async getAll(req: Request, res: Response, next: NextFunction) {
+    try {
+      const filters: ProductsFilters = req.query;
 
-    const result = await ProductsService.getAll(filters);
+      const result = await ProductsService.getAll(filters);
 
-    if (!result.ok) {
-      const message =
-        result.error === "DB_ERROR"
-          ? "Ocurrió un error en la base de datos"
-          : "Error interno del servidor";
-      return res.status(500).json({ error: message });
-    }
-
-    return res.json(result.data);
-  }
-
-  static async getById(req: Request, res: Response) {
-    const { id } = req.params;
-
-    if (!id) {
-      return res.status(400).json({ error: "ID de producto requerido" });
-    }
-
-    const result = await ProductsService.getById(id);
-
-    if (!result.ok) {
-      let status = 500;
-      let message = "Error interno del servidor";
-
-      if (result.error === "PRODUCT_NOT_FOUND") {
-        status = 404;
-        message = "Producto no encontrado";
-      } else if (result.error === "DB_ERROR") {
-        message = "Error en la base de datos";
+      if (!result.ok) {
+        const message =
+          result.error === "DB_ERROR"
+            ? "Ocurrió un error en la base de datos"
+            : "Error interno del servidor";
+        return next(new AppError(message, 500));
       }
 
-      return res.status(status).json({ error: message });
+      return res.json(result.data);
+    } catch (error) {
+      return next(error);
     }
-
-    return res.json(result.data);
   }
 
-  static async create(req: Request, res: Response) {
-    const newProduct: ProductPost = req.body;
+  static async getById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
 
-    const result = await ProductsService.create(newProduct);
+      const result = await ProductsService.getById(id as string);
 
-    if (!result.ok) {
-      let status = 500;
-      let message = "Error interno del servidor";
+      if (!result.ok) {
+        let status = 500;
+        let message = "Error interno del servidor";
 
-      if (result.error === "DB_ERROR") {
-        message = "Error en la base de datos";
+        if (result.error === "PRODUCT_NOT_FOUND") {
+          status = 404;
+          message = "Producto no encontrado";
+        } else if (result.error === "DB_ERROR") {
+          message = "Error en la base de datos";
+        }
+
+        return next(new AppError(message, status));
       }
 
-      return res.status(status).json({ error: message });
+      return res.json(result.data);
+    } catch (error) {
+      return next(error);
     }
-
-    return res.status(201).json(result.data);
   }
 
-  static async delete(req: Request, res: Response) {
-    const { id } = req.params;
-    if (!id) {
-      return res.status(400).json({ error: "ID de producto requerido" });
-    }
+  static async create(req: Request, res: Response, next: NextFunction) {
+    try {
+      const newProduct: ProductPost = req.body;
 
-    const result = await ProductsService.delete(id);
+      const result = await ProductsService.create(newProduct);
 
-    if (!result.ok) {
-      let status = 500;
-      let message = "Error interno del servidor";
+      if (!result.ok) {
+        let status = 500;
+        let message = "Error interno del servidor";
 
-      if (result.error === "PRODUCT_NOT_FOUND") {
-        status = 404;
-        message = "Producto no encontrado";
-      } else if (result.error === "DB_ERROR") {
-        message = "Error en la base de datos";
+        if (result.error === "DB_ERROR") {
+          message = "Error en la base de datos";
+        }
+
+        return next(new AppError(message, status));
       }
 
-      return res.status(status).json({ error: message });
+      return res.status(201).json(result.data);
+    } catch (error) {
+      return next(error);
     }
-
-    return res.json(result.data);
   }
 
-  static async update(req: Request, res: Response) {
-    const { id } = req.params;
-    if (!id) {
-      return res.status(400).json({ error: "ID de producto requerido" });
-    }
-    const productData: ProductPatch = req.body;
+  static async delete(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
 
-    const result = await ProductsService.update(id, productData);
+      const result = await ProductsService.delete(id as string);
 
-    if (!result.ok) {
-      let status = 500;
-      let message = "Error interno del servidor";
+      if (!result.ok) {
+        let status = 500;
+        let message = "Error interno del servidor";
 
-      if (result.error === "PRODUCT_NOT_FOUND") {
-        status = 404;
-        message = "Producto no encontrado";
-      } else if (result.error === "DB_ERROR") {
-        message = "Error en la base de datos";
+        if (result.error === "PRODUCT_NOT_FOUND") {
+          status = 404;
+          message = "Producto no encontrado";
+        } else if (result.error === "DB_ERROR") {
+          message = "Error en la base de datos";
+        }
+
+        return next(new AppError(message, status));
       }
 
-      return res.status(status).json({ error: message });
+      return res.json(result.data);
+    } catch (error) {
+      return next(error);
     }
-
-    return res.json(result.data);
   }
 
-  static async replace(req: Request, res: Response) {
-    const { id } = req.params;
-    if (!id) {
-      return res.status(400).json({ error: "ID de producto requerido" });
-    }
+  static async update(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const productData: ProductPatch = req.body;
 
-    const productData: ProductPost = req.body;
-    const result = await ProductsService.replace(id, productData);
+      const result = await ProductsService.update(id as string, productData);
 
-    if (!result.ok) {
-      let status = 500;
-      let message = "Error interno del servidor";
+      if (!result.ok) {
+        let status = 500;
+        let message = "Error interno del servidor";
 
-      if (result.error === "PRODUCT_NOT_FOUND") {
-        status = 404;
-        message = "Producto no encontrado";
-      } else if (result.error === "DB_ERROR") {
-        message = "Error en la base de datos";
+        if (result.error === "PRODUCT_NOT_FOUND") {
+          status = 404;
+          message = "Producto no encontrado";
+        } else if (result.error === "DB_ERROR") {
+          message = "Error en la base de datos";
+        }
+
+        return next(new AppError(message, status));
       }
 
-      return res.status(status).json({ error: message });
+      return res.json(result.data);
+    } catch (error) {
+      return next(error);
     }
+  }
 
-    return res.json(result.data);
+  static async replace(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+
+      const productData: ProductPost = req.body;
+      const result = await ProductsService.replace(id as string, productData);
+
+      if (!result.ok) {
+        let status = 500;
+        let message = "Error interno del servidor";
+
+        if (result.error === "PRODUCT_NOT_FOUND") {
+          status = 404;
+          message = "Producto no encontrado";
+        } else if (result.error === "DB_ERROR") {
+          message = "Error en la base de datos";
+        }
+
+        return next(new AppError(message, status));
+      }
+
+      return res.json(result.data);
+    } catch (error) {
+      return next(error);
+    }
   }
 }

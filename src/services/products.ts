@@ -1,7 +1,8 @@
 import { Prisma, Product } from "@prisma/client";
 import { DomainError, InfraError, Result } from "../types";
 import { ProductsModel } from "../models/products";
-import { ProductPatch, ProductPost, ProductsFilters } from "../schemas/products";
+import { ProductPatch, ProductPost } from "../schemas/products/body";
+import { ProductsFilters } from "../schemas/products/query";
 
 export class ProductsService {
   static async getAll(
@@ -14,7 +15,6 @@ export class ProductsService {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         return { ok: false, error: "DB_ERROR" };
       }
-      console.log("Error no clasificado en ProductsService", error);
       return { ok: false, error: "IO_ERROR" };
     }
   }
@@ -33,20 +33,18 @@ export class ProductsService {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         return { ok: false, error: "DB_ERROR" };
       }
-      console.log("Error no clasificado en ProductsService", error);
       return { ok: false, error: "IO_ERROR" };
     }
   }
 
   static async create(newProduct: ProductPost) {
     try {
-      const product = await ProductsModel.create(newProduct);
+      const product = await ProductsModel.create(newProduct.body);
       return { ok: true, data: product };
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         return { ok: false, error: "DB_ERROR" };
       }
-      console.log("Error no clasificado en ProductsService", error);
       return { ok: false, error: "IO_ERROR" };
     }
   }
@@ -65,7 +63,6 @@ export class ProductsService {
         }
         return { ok: false, error: "DB_ERROR" };
       }
-      console.log("Error no clasificado en ProductsService", error);
       return { ok: false, error: "IO_ERROR" };
     }
   }
@@ -75,7 +72,7 @@ export class ProductsService {
     productData: ProductPatch
   ): Promise<Result<Product, DomainError | InfraError>> {
     try {
-      const productUpdated = await ProductsModel.update(id, productData);
+      const productUpdated = await ProductsModel.update(id, productData.body);
       return { ok: true, data: productUpdated };
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -84,7 +81,6 @@ export class ProductsService {
         }
         return { ok: false, error: "DB_ERROR" };
       }
-      console.log("Error no clasificado en ProductsService", error);
       return { ok: false, error: "IO_ERROR" };
     }
   }
@@ -94,7 +90,7 @@ export class ProductsService {
     productData: ProductPost
   ): Promise<Result<Product, DomainError | InfraError>> {
     try {
-      const productUpdated = await ProductsModel.replace(id, productData);
+      const productUpdated = await ProductsModel.replace(id, productData.body);
       return { ok: true, data: productUpdated };
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -103,7 +99,6 @@ export class ProductsService {
         }
         return { ok: false, error: "DB_ERROR" };
       }
-      console.log("Error no clasificado en ProductsService", error);
       return { ok: false, error: "IO_ERROR" };
     }
   }

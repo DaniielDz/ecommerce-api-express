@@ -7,7 +7,6 @@ declare global {
       session?: {
         user: PublicUser | null;
       };
-      productFilters?: ProductsFilters;
       params: { id?: number | string };
     }
   }

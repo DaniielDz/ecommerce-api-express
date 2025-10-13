@@ -1,29 +1,55 @@
 import { Router } from "express";
-import { productsQuerySchema } from "../schemas/products";
-import { validateQuery } from "../middlewares/products/validateQuery";
 import { ProductsController } from "../controllers/products";
-import { postProductValidation } from "../middlewares/products/postValidation";
-import { validateID } from "../middlewares/validateId";
-import { patchProductValidation } from "../middlewares/products/patchValidation";
-import { stripUndefinedValues } from "../middlewares/stripUndefinedValues";
+import { validateRequest } from "../middlewares/validateRequest";
+import { productsQuerySchema } from "../schemas/products/query";
+import { idSchema } from "../schemas/globals";
+import {
+  createProductSchema,
+  patchProductSchema,
+  putProductSchema,
+} from "../schemas/products/body";
+import { isAuthenticated } from "../middlewares/isAuthenticated";
+import { checkRole } from "../middlewares/checkRole";
 
 const router = Router();
 
-router.get("/", validateQuery(productsQuerySchema), ProductsController.getAll);
-router.get("/:id", validateID, ProductsController.getById);
-router.post("/", postProductValidation, ProductsController.create);
-router.delete("/:id", validateID, ProductsController.delete);
+router.get(
+  "/",
+  validateRequest(productsQuerySchema),
+  ProductsController.getAll
+);
+
+router.get("/:id", validateRequest(idSchema), ProductsController.getById);
+
+router.post(
+  "/",
+  isAuthenticated,
+  checkRole,
+  validateRequest(createProductSchema),
+  ProductsController.create
+);
+
+router.delete(
+  "/:id",
+  isAuthenticated,
+  checkRole,
+  validateRequest(idSchema),
+  ProductsController.delete
+);
+
 router.put(
   "/:id",
-  validateID,
-  postProductValidation,
+  isAuthenticated,
+  checkRole,
+  validateRequest(putProductSchema),
   ProductsController.replace
 );
+
 router.patch(
   "/:id",
-  validateID,
-  patchProductValidation,
-  stripUndefinedValues,
+  isAuthenticated,
+  checkRole,
+  validateRequest(patchProductSchema),
   ProductsController.update
 );
 
