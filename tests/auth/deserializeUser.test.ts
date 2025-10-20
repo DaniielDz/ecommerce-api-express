@@ -1,9 +1,9 @@
-import { authMiddleware } from "../../src/middlewares/auth";
+import { deserializeUser } from "../../src/middlewares/deserializeUser";
 import jwt from "jsonwebtoken";
 
 jest.mock("jsonwebtoken");
 
-describe("authMiddleware", () => {
+describe("deserializeUser", () => {
   const mockJwt = jest.mocked(jwt);
 
   const makeReq = (token?: string) => {
@@ -16,7 +16,7 @@ describe("authMiddleware", () => {
 
   test("Sin token, no setea usuario", () => {
     const req = makeReq();
-    authMiddleware(req, res, next);
+    deserializeUser(req, res, next);
 
     expect(req.session.user).toBe(null);
     expect(next).toHaveBeenCalled();
@@ -28,7 +28,7 @@ describe("authMiddleware", () => {
       throw new Error("Token invalido");
     });
 
-    authMiddleware(req, res, next);
+    deserializeUser(req, res, next);
 
     expect(req.session.user).toBe(null);
   });
@@ -37,7 +37,7 @@ describe("authMiddleware", () => {
     const req = makeReq("token");
     mockJwt.verify.mockReturnValue({ id: "uuid", username: "username" } as any);
 
-    authMiddleware(req, res, next);
+    deserializeUser(req, res, next);
 
     expect(req.session.user).toEqual({ id: "uuid", username: "username" });
   });

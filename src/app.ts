@@ -1,7 +1,7 @@
 import express from "express";
 import routes from "./routes";
 import cookieParser from "cookie-parser";
-import { authMiddleware } from "./middlewares/auth";
+import { deserializeUser } from "./middlewares/deserializeUser";
 import { errorHandler } from "./middlewares/errorHandler";
 
 const app = express();
@@ -9,7 +9,7 @@ const app = express();
 app.disable("x-powered-by");
 app.use(express.json());
 app.use(cookieParser());
-app.use(authMiddleware);
+app.use(deserializeUser);
 app.use("/", routes);
 app.use(errorHandler);
 
