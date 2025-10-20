@@ -3,7 +3,7 @@ import { PublicUser } from "../types";
 import { ENV } from "../config/env";
 import jwt from "jsonwebtoken";
 
-export function authMiddleware(
+export function deserializeUser(
   req: Request,
   _res: Response,
   next: NextFunction

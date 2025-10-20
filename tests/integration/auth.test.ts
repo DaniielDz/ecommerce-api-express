@@ -45,7 +45,7 @@ describe("Auth routes", () => {
       .post("/auth/register")
       .send({
         email: "john@gmail.com",
-        password: "pwd",
+        password: "password123",
         firstName: "John",
         lastName: "Doe",
       })
@@ -63,14 +63,15 @@ describe("Auth routes", () => {
       .post("/auth/register")
       .send({
         email: "john@gmail.com",
-        password: "pwd",
+        password: "password123",
         firstName: "John",
         lastName: "Doe",
       })
       .expect(201);
+
     const res = await request(app)
       .post("/auth/login")
-      .send({ email: "john@gmail.com", password: "pwd" })
+      .send({ email: "john@gmail.com", password: "password123" })
       .expect(200);
 
     expect(res.headers["set-cookie"]).toEqual(
@@ -86,14 +87,14 @@ describe("Auth routes", () => {
   test("logout con cookie -> 200", async () => {
     await request(app).post("/auth/register").send({
       email: "john@gmail.com",
-      password: "pwd",
+      password: "password123",
       firstName: "John",
       lastName: "Doe",
     });
     const cookie = (
       await request(app)
         .post("/auth/login")
-        .send({ email: "john@gmail.com", password: "pwd" })
+        .send({ email: "john@gmail.com", password: "password123" })
     ).headers["set-cookie"];
 
     const res = await request(app)
