@@ -10,9 +10,7 @@ export const validateRequest = (schema: ZodObject<any>) => {
         query: req.query,
       });
 
-      req.body = parsed["body"];
-      req.params = parsed["params"] as typeof req.params;
-      req.query = parsed["query"] as typeof req.query;
+      Object.assign(req, parsed);
 
       return next();
     } catch (error) {
