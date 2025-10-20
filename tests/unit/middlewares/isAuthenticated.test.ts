@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { isAuthenticated } from "../../src/middlewares/isAuthenticated";
-import { AppError } from "../../src/errors/AppError";
+import { isAuthenticated } from "../../../src/middlewares/isAuthenticated";
+import { AppError } from "../../../src/errors/AppError";
 
 jest.mock("jsonwebtoken");
 const mockJwt = jest.mocked(jwt);

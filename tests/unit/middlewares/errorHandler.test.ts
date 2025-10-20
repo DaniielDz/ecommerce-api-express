@@ -1,6 +1,6 @@
 import { ZodError } from "zod";
-import { AppError } from "../../src/errors/AppError";
-import { errorHandler } from "../../src/middlewares/errorHandler";
+import { AppError } from "../../../src/errors/AppError";
+import { errorHandler } from "../../../src/middlewares/errorHandler";
 import { Request, Response } from "express";
 import { ZodIssueCode } from "zod/v3";
 

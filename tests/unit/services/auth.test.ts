@@ -1,10 +1,10 @@
-import { AuthModel } from "../../src/models/auth";
+import { AuthModel } from "../../../src/models/auth";
 import bcrypt from "bcrypt";
-import { AuthService } from "../../src/services/auth";
-import { PublicUser, UserRegister } from "../../src/types";
+import { AuthService } from "../../../src/services/auth";
+import { PublicUser, UserRegister } from "../../../src/types";
 import { User } from "@prisma/client";
 
-jest.mock("../../src/models/auth");
+jest.mock("../../../src/models/auth");
 jest.mock("bcrypt");
 
 describe("AuthService", () => {

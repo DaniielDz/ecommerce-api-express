@@ -1,4 +1,4 @@
-import { deserializeUser } from "../../src/middlewares/deserializeUser";
+import { deserializeUser } from "../../../src/middlewares/deserializeUser";
 import jwt from "jsonwebtoken";
 
 jest.mock("jsonwebtoken");

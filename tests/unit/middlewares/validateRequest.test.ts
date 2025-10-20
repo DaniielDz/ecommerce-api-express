@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import z, { ZodError } from "zod";
-import { validateRequest } from "../../src/middlewares/validateRequest";
+import { validateRequest } from "../../../src/middlewares/validateRequest";
 
 const testSchema = z.object({
   body: z.object({

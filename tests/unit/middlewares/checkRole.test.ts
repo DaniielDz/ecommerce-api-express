@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { checkRole } from "../../src/middlewares/checkRole";
-import { PublicUser } from "../../src/types";
-import { AppError } from "../../src/errors/AppError";
+import { checkRole } from "../../../src/middlewares/checkRole";
+import { PublicUser } from "../../../src/types";
+import { AppError } from "../../../src/errors/AppError";
 
 const mockRequest = (sessionData?: { user?: PublicUser }) => {
   return {
