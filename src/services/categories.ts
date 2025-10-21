@@ -2,13 +2,28 @@ import { AppError } from "../errors/AppError";
 import { CategoriesModel } from "../models/categories";
 import {
   CreateCategoryInput,
+  GetAllCategoriesQuery,
   UpdateCategoryInput,
 } from "../schemas/categories";
 
 export class CategoriesService {
-  static async getAll() {
-    const categories = await CategoriesModel.getAll();
-    return categories;
+  static async getAll({ page, limit }: GetAllCategoriesQuery) {
+    const offset = (page - 1) * limit;
+
+    const [categories, total] = await Promise.all([
+      CategoriesModel.getAll({ offset, limit }),
+      CategoriesModel.count(), 
+    ]);
+
+    return {
+      data: categories,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
   static async getById(id: number) {

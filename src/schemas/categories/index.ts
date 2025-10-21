@@ -34,6 +34,22 @@ export const patchCategorySchema = z.object({
   body: partialCategoryInputSchema,
 });
 
+export const getAllCategoriesQuerySchema = z.object({
+  page: z.coerce
+    .number()
+    .int()
+    .positive("La página debe ser un número positivo")
+    .optional()
+    .default(1),
+
+  limit: z.coerce.number().int().positive().default(10),
+});
+
+export const getAllCategoriesSchema = z.object({
+  query: getAllCategoriesQuerySchema,
+});
+
 // --- Tipos ---
 export type CreateCategoryInput = z.infer<typeof categoryInputSchema>;
 export type UpdateCategoryInput = z.infer<typeof partialCategoryInputSchema>;
+export type GetAllCategoriesQuery = z.infer<typeof getAllCategoriesQuerySchema>;
