@@ -12,11 +12,11 @@ export class CategoriesService {
 
     const [categories, total] = await Promise.all([
       CategoriesModel.getAll({ offset, limit }),
-      CategoriesModel.count(), 
+      CategoriesModel.count(),
     ]);
 
     return {
-      data: categories,
+      categories,
       meta: {
         total,
         page,
