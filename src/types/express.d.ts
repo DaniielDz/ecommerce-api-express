@@ -8,6 +8,11 @@ declare global {
         user: PublicUser | null;
       };
       params: { id?: number | string };
+      validatedData?: {
+        body?: unknown;
+        params?: unknown;
+        query?: unknown;
+      };
     }
   }
 }

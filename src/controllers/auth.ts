@@ -7,7 +7,7 @@ import { AppError } from "../errors/AppError";
 export class AuthController {
   static async register(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email, password, firstName, lastName }: UserRegister = req.body;
+      const { email, password, firstName, lastName } = req.validatedData?.body as UserRegister;
 
       const result = await AuthService.register({
         email,
@@ -32,7 +32,7 @@ export class AuthController {
 
   static async login(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email, password }: UserLogin = req.body;
+      const { email, password } = req.validatedData?.body as UserLogin;
 
       const result = await AuthService.login({ email, password });
 

@@ -10,7 +10,7 @@ export const validateRequest = (schema: ZodObject<any>) => {
         query: req.query,
       });
 
-      Object.assign(req, parsed);
+      req.validatedData = parsed;
 
       return next();
     } catch (error) {
