@@ -19,9 +19,10 @@ const mockRequest = (data: { body?: any; params?: any; query?: any }) => {
     body: data.body || {},
     params: data.params || {},
     query: data.query || {},
+    validatedData: undefined,
   };
 
-  return req as Request;
+  return req;
 };
 
 const mockResponse = () => ({}) as Response;
@@ -39,11 +40,17 @@ describe("Middleware: validateRequest", () => {
       query: { page: "2" },
     });
 
-    validationMiddleware(req, mockResponse(), mockNext);
+    validationMiddleware(req as unknown as Request, mockResponse(), mockNext);
 
     expect(mockNext).toHaveBeenCalledTimes(1);
     expect(mockNext).toHaveBeenCalledWith();
-    expect(req.body.name).toBe("John");
+
+    expect(req.query.page).toBe("2");
+    expect(req.validatedData).toEqual({
+      body: { name: "John" },
+      params: { id: "f8bbe5d8-4b45-48da-a0f1-c64484bb8426" },
+      query: { page: 2 },
+    });
   });
 
   test("Debe llamar a next() con ZodError si la validacion falla", () => {
@@ -53,7 +60,7 @@ describe("Middleware: validateRequest", () => {
       query: { page: 2 },
     });
 
-    validationMiddleware(req, mockResponse(), mockNext);
+    validationMiddleware(req as unknown as Request, mockResponse(), mockNext);
 
     expect(mockNext).toHaveBeenCalledTimes(1);
     expect(mockNext).toHaveBeenCalledWith(expect.any(ZodError));

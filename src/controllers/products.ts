@@ -7,7 +7,7 @@ import { AppError } from "../errors/AppError";
 export class ProductsController {
   static async getAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const filters: ProductsFilters = req.query;
+      const filters = req.validatedData?.query as ProductsFilters;
 
       const result = await ProductsService.getAll(filters);
 
@@ -27,9 +27,9 @@ export class ProductsController {
 
   static async getById(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params;
+      const { id } = req.validatedData?.params as { id: string };
 
-      const result = await ProductsService.getById(id as string);
+      const result = await ProductsService.getById(id);
 
       if (!result.ok) {
         let status = 500;
@@ -53,7 +53,7 @@ export class ProductsController {
 
   static async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const newProduct: ProductPost = req.body;
+      const newProduct = req.validatedData?.body as ProductPost;
 
       const result = await ProductsService.create(newProduct);
 
@@ -76,9 +76,9 @@ export class ProductsController {
 
   static async delete(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params;
+      const { id } = req.validatedData?.params as { id: string };
 
-      const result = await ProductsService.delete(id as string);
+      const result = await ProductsService.delete(id);
 
       if (!result.ok) {
         let status = 500;
@@ -102,10 +102,10 @@ export class ProductsController {
 
   static async update(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params;
-      const productData: ProductPatch = req.body;
+      const { id } = req.validatedData?.params as { id: string };
+      const productData = req.validatedData?.body as ProductPatch;
 
-      const result = await ProductsService.update(id as string, productData);
+      const result = await ProductsService.update(id, productData);
 
       if (!result.ok) {
         let status = 500;
@@ -129,10 +129,10 @@ export class ProductsController {
 
   static async replace(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params;
+      const { id } = req.validatedData?.params as { id: string };
+      const productData = req.validatedData?.body as ProductPost;
 
-      const productData: ProductPost = req.body;
-      const result = await ProductsService.replace(id as string, productData);
+      const result = await ProductsService.replace(id, productData);
 
       if (!result.ok) {
         let status = 500;
