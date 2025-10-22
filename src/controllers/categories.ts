@@ -9,7 +9,7 @@ import { CategoriesService } from "../services/categories";
 export class CategoriesController {
   static async getAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const { page, limit } = req.query as unknown as GetAllCategoriesQuery;
+      const { page, limit } = req.validatedData?.query as GetAllCategoriesQuery;
 
       const result = await CategoriesService.getAll({ page, limit });
 
@@ -21,7 +21,7 @@ export class CategoriesController {
 
   static async getById(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params as unknown as { id: number };
+      const { id } = req.validatedData?.params as { id: number };
 
       const category = await CategoriesService.getById(id);
 
@@ -33,7 +33,7 @@ export class CategoriesController {
 
   static async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const { name, description } = req.body as unknown as CreateCategoryInput;
+      const { name, description } = req.validatedData?.body as CreateCategoryInput;
 
       const categoryCreated = await CategoriesService.create({
         name,
@@ -48,7 +48,7 @@ export class CategoriesController {
 
   static async delete(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params as unknown as { id: number };
+      const { id } = req.validatedData?.params as { id: number };
 
       const categoryDeleted = await CategoriesService.delete(id);
 
@@ -60,8 +60,8 @@ export class CategoriesController {
 
   static async update(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params as unknown as { id: number };
-      const newData = req.body as unknown as UpdateCategoryInput;
+      const { id } = req.validatedData?.params as { id: number };
+      const newData = req.validatedData?.body as UpdateCategoryInput;
 
       const categoryUpdated = await CategoriesService.update(id, newData);
 
@@ -73,8 +73,8 @@ export class CategoriesController {
 
   static async replace(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params as unknown as { id: number };
-      const newData = req.body as unknown as CreateCategoryInput;
+      const { id } = req.validatedData?.params as { id: number };
+      const newData = req.validatedData?.body as CreateCategoryInput;
 
       const categoryUpdated = await CategoriesService.replace(id, newData);
 

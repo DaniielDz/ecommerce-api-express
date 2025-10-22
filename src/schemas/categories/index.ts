@@ -24,13 +24,11 @@ export const createCategorySchema = z.object({
   body: categoryInputSchema,
 });
 
-export const updateCategorySchema = z.object({
-  ...numberIdSchema.shape,
+export const updateCategorySchema = numberIdSchema.extend({
   body: categoryInputSchema,
 });
 
-export const patchCategorySchema = z.object({
-  ...numberIdSchema.shape,
+export const patchCategorySchema = numberIdSchema.extend({
   body: partialCategoryInputSchema,
 });
 
