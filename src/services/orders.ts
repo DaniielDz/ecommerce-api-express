@@ -82,7 +82,15 @@ export class OrdersService {
       orderData,
       orderItems
     );
-    await CartModel.clearCartItems(cart.id);
+
+    try {
+      await CartModel.clearCartItems(cart.id);
+    } catch (clearCartError) {
+      console.error(
+        `Error vaciando el carrito: ${cart.id} despues de la creacion de la orden: ${newOrder.id}:`,
+        clearCartError
+      );
+    }
 
     return newOrder;
   }
