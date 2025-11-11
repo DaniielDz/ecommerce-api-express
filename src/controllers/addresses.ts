@@ -62,7 +62,7 @@ export class AddressesController {
       const userId = req.session!.user!.id as string;
       const { id: addressId } = req.validatedData!.params as { id: string };
 
-      await AddressesService.deleteAddress(userId, addressId);
+      await AddressesService.deleteAddress(addressId, userId);
 
       return res.status(204).send();
     } catch (error) {
