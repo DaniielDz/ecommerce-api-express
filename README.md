@@ -253,7 +253,7 @@ npm run prisma:seed
 
 - **Autor**: DaniielDz
 - **GitHub**: [https://github.com/DaniielDz](https://github.com/DaniielDz)
-- **LinkedIn**: [https://www.linkedin.com/in/daniieldz/](https://www.linkedin.com/in/daniieldz/)
+- **LinkedIn**: [https://www.linkedin.com/in/daniieldz/](https://www.linkedin.com/in/daniiel-diazz/)
 
 ---
 
