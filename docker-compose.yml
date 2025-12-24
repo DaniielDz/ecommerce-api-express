@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  # 1. Base de Datos PostgreSQL
+  db:
+    image: postgres:15-alpine
+    container_name: ecommerce-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+      POSTGRES_DB: ${DB_NAME:-ecommerce_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # 2. API 
+  api:
+    build:
+      context: .
+      target: development # Usamos la etapa de desarrollo
+    container_name: ecommerce-api
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      # Conexión a la DB interna de Docker (host 'db')
+      - DATABASE_URL=postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-password}@db:5432/${DB_NAME:-ecommerce_db}?schema=public
+      - PORT=3000
+      - SECRET_JWT_KEY=${SECRET_JWT_KEY}
+      - MP_ACCESS_TOKEN=${MP_ACCESS_TOKEN}
+      - MP_WEBHOOK_SECRET=${MP_WEBHOOK_SECRET}
+      # API_URL se sobrescribirá dinámicamente al usar ngrok, se puede poner localhost para pruebas internas
+      - API_URL=${API_URL:-http://localhost:3000}
+      - NODE_ENV=development
+    volumes:
+      - .:/app # Montamos el código actual para hot-reloading
+      - /app/node_modules # Evitamos sobrescribir node_modules del contenedor
+    depends_on:
+      - db
+    command: sh -c "npx prisma generate && npm run dev"
+
+  # 3. Ngrok (Túnel para Webhooks)
+  # Este servicio expone el puerto 3000 de la API a internet
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: ecommerce-ngrok
+    restart: unless-stopped
+    ports:
+      - "4040:4040"
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+    command: http api:3000
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
