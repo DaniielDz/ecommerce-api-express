@@ -85,10 +85,6 @@
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Cookie",
-                "value": "access_token={{access_token}}"
-              }
             ],
             "url": {
               "raw": "{{base_url}}/auth/logout",
@@ -107,10 +103,6 @@
           "request": {
             "method": "GET",
             "header": [
-              {
-                "key": "Cookie",
-                "value": "access_token={{access_token}}"
-              }
             ],
             "url": {
               "raw": "{{base_url}}/users/me",
@@ -127,10 +119,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "Cookie",
-                "value": "access_token={{access_token}}"
               }
             ],
             "body": {
@@ -149,10 +137,6 @@
           "request": {
             "method": "DELETE",
             "header": [
-              {
-                "key": "Cookie",
-                "value": "access_token={{access_token}}"
-              }
             ],
             "url": {
               "raw": "{{base_url}}/users/me",
@@ -171,10 +155,6 @@
           "request": {
             "method": "GET",
             "header": [
-              {
-                "key": "Cookie",
-                "value": "access_token={{access_token}}"
-              }
             ],
             "url": {
               "raw": "{{base_url}}/users/me/addresses",
@@ -191,10 +171,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "Cookie",
-                "value": "access_token={{access_token}}"
               }
             ],
             "body": {
@@ -213,10 +189,6 @@
           "request": {
             "method": "GET",
             "header": [
-              {
-                "key": "Cookie",
-                "value": "access_token={{access_token}}"
-              }
             ],
             "url": {
               "raw": "{{base_url}}/users/me/addresses/:id",
@@ -239,10 +211,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "Cookie",
-                "value": "access_token={{access_token}}"
               }
             ],
             "body": {
@@ -263,45 +231,10 @@
           }
         },
         {
-          "name": "Reemplazar Dirección",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Cookie",
-                "value": "access_token={{access_token}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"addressLine1\": \"Nueva Calle 456\",\n  \"city\": \"Rosario\",\n  \"state\": \"Santa Fe\",\n  \"postalCode\": \"2000\",\n  \"country\": \"Argentina\",\n  \"isDefault\": false\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/users/me/addresses/:id",
-              "host": ["{{base_url}}"],
-              "path": ["users", "me", "addresses", ":id"],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "uuid-de-direccion"
-                }
-              ]
-            }
-          }
-        },
-        {
           "name": "Eliminar Dirección",
           "request": {
             "method": "DELETE",
             "header": [
-              {
-                "key": "Cookie",
-                "value": "access_token={{access_token}}"
-              }
             ],
             "url": {
               "raw": "{{base_url}}/users/me/addresses/:id",
@@ -373,10 +306,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "Cookie",
-                "value": "access_token={{access_token}}"
               }
             ],
             "body": {
@@ -398,10 +327,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "Cookie",
-                "value": "access_token={{access_token}}"
               }
             ],
             "body": {
@@ -429,10 +354,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "Cookie",
-                "value": "access_token={{access_token}}"
               }
             ],
             "body": {
@@ -457,10 +378,6 @@
           "request": {
             "method": "DELETE",
             "header": [
-              {
-                "key": "Cookie",
-                "value": "access_token={{access_token}}"
-              }
             ],
             "url": {
               "raw": "{{base_url}}/products/:id",
@@ -528,10 +445,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "Cookie",
-                "value": "access_token={{access_token}}"
               }
             ],
             "body": {
@@ -553,10 +466,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "Cookie",
-                "value": "access_token={{access_token}}"
               }
             ],
             "body": {
@@ -584,10 +493,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "Cookie",
-                "value": "access_token={{access_token}}"
               }
             ],
             "body": {
@@ -612,10 +517,6 @@
           "request": {
             "method": "DELETE",
             "header": [
-              {
-                "key": "Cookie",
-                "value": "access_token={{access_token}}"
-              }
             ],
             "url": {
               "raw": "{{base_url}}/categories/:id",
@@ -640,10 +541,6 @@
           "request": {
             "method": "GET",
             "header": [
-              {
-                "key": "Cookie",
-                "value": "access_token={{access_token}}"
-              }
             ],
             "url": {
               "raw": "{{base_url}}/cart",
@@ -660,10 +557,6 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "Cookie",
-                "value": "access_token={{access_token}}"
               }
             ],
             "body": {
@@ -671,24 +564,20 @@
               "raw": "{\n  \"productId\": \"uuid-de-producto\",\n  \"quantity\": 2\n}"
             },
             "url": {
-              "raw": "{{base_url}}/cart",
+              "raw": "{{base_url}}/cart/items",
               "host": ["{{base_url}}"],
-              "path": ["cart"]
+              "path": ["cart", "items"]
             }
           }
         },
         {
           "name": "Actualizar Cantidad en Carrito",
           "request": {
-            "method": "PUT",
+            "method": "PATCH",
             "header": [
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "Cookie",
-                "value": "access_token={{access_token}}"
               }
             ],
             "body": {
@@ -696,9 +585,9 @@
               "raw": "{\n  \"quantity\": 5\n}"
             },
             "url": {
-              "raw": "{{base_url}}/cart/:productId",
+              "raw": "{{base_url}}/cart/items/:productId",
               "host": ["{{base_url}}"],
-              "path": ["cart", ":productId"],
+              "path": ["cart", "items", ":productId"],
               "variable": [
                 {
                   "key": "productId",
@@ -713,15 +602,11 @@
           "request": {
             "method": "DELETE",
             "header": [
-              {
-                "key": "Cookie",
-                "value": "access_token={{access_token}}"
-              }
             ],
             "url": {
-              "raw": "{{base_url}}/cart/:productId",
+              "raw": "{{base_url}}/cart/items/:productId",
               "host": ["{{base_url}}"],
-              "path": ["cart", ":productId"],
+              "path": ["cart", "items", ":productId"],
               "variable": [
                 {
                   "key": "productId",
@@ -736,10 +621,6 @@
           "request": {
             "method": "DELETE",
             "header": [
-              {
-                "key": "Cookie",
-                "value": "access_token={{access_token}}"
-              }
             ],
             "url": {
               "raw": "{{base_url}}/cart",
@@ -758,10 +639,6 @@
           "request": {
             "method": "GET",
             "header": [
-              {
-                "key": "Cookie",
-                "value": "access_token={{access_token}}"
-              }
             ],
             "url": {
               "raw": "{{base_url}}/orders?page=1&limit=10",
@@ -785,10 +662,6 @@
           "request": {
             "method": "GET",
             "header": [
-              {
-                "key": "Cookie",
-                "value": "access_token={{access_token}}"
-              }
             ],
             "url": {
               "raw": "{{base_url}}/orders/:id",
@@ -811,15 +684,11 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "Cookie",
-                "value": "access_token={{access_token}}"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"shippingAddress\": {\n    \"addressLine1\": \"Calle Falsa 123\",\n    \"city\": \"Buenos Aires\",\n    \"state\": \"Buenos Aires\",\n    \"postalCode\": \"1234\",\n    \"country\": \"Argentina\"\n  }\n}"
+              "raw": "{\n  \"street\": \"Calle Falsa 123\",\n  \"city\": \"Buenos Aires\",\n  \"province\": \"Buenos Aires\",\n  \"postalCode\": \"1234\",\n  \"country\": \"Argentina\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/orders",
@@ -833,10 +702,6 @@
           "request": {
             "method": "PATCH",
             "header": [
-              {
-                "key": "Cookie",
-                "value": "access_token={{access_token}}"
-              }
             ],
             "url": {
               "raw": "{{base_url}}/orders/:id/cancel",
@@ -856,10 +721,6 @@
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Cookie",
-                "value": "access_token={{access_token}}"
-              }
             ],
             "url": {
               "raw": "{{base_url}}/orders/:id/checkout",

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { AppError } from "../errors/AppError";
+import { ENV } from "../config/env";
 
 export const isAuthenticated = (
   req: Request,
@@ -14,7 +15,7 @@ export const isAuthenticated = (
   }
 
   try {
-    jwt.verify(token, process.env.SECRET_JWT_KEY);
+    jwt.verify(token, ENV.SECRET_JWT_KEY);
     return next();
   } catch {
     return next(new AppError("Token Invalido", 401));
